@@ -67,19 +67,20 @@ void sort_bubblesort(void *arr, size_t count, size_t elesize, int (*cmp)(const v
     char *ptrstart = (char *)arr,  /* Pointer to first element in array. */
         *ptrend,                   /* Pointer to last element in array. */
         *ptr1,                     /* Pointer to first element to be compared. */
-        *ptr2;                     /* Pointer to second element to be compared. */
-    int isswapped = TRUE;
+        *ptr2,                     /* Pointer to second element to be compared. */
+        *ptrlastswap;              /* Pointer to first element that was last swapped. */
 
     /* Avoid unsigned arithmetic loss. */
     if (count == 0) {
         return;
     }
 
-    /* Iterate until array sorted. After the n'th iteration, the n largest
-     * elements would be correctly sorted at the end of the array.
+    /* Iterate until array sorted. After the n'th iteration, at least the n
+     * largest elements is correctly sorted at the end of the array.
      */
-    for (ptrend = ptrstart + (count - 1) * elesize; ptrstart < ptrend; ptrend -= elesize) {
-        isswapped = FALSE;
+    ptrend = ptrstart + (count - 1) * elesize;
+    while (ptrstart < ptrend) {
+        ptrlastswap = ptrstart;
 
         /* Iterate pairs until reach sorted end of array. */
         for (ptr1 = ptrstart, ptr2 = ptr1 + elesize; ptr1 < ptrend; ptr1 = ptr2, ptr2 = ptr1 + elesize) {
@@ -88,13 +89,14 @@ void sort_bubblesort(void *arr, size_t count, size_t elesize, int (*cmp)(const v
              */
             if (cmp(ptr1, ptr2) > 0) {
                 memswap(ptr1, ptr2, elesize);
-                isswapped = TRUE;
+                ptrlastswap = ptr1;
             }
         }
 
-        if (!isswapped) {
-            break;
-        }
+        /* The element that was last swapped closest towards the end of the
+         * array indicates this part of the array onwards is correctly sorted.
+         */
+        ptrend = ptrlastswap;
     }
 }
 
