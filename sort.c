@@ -8,6 +8,8 @@
 #include <stdlib.h>
 
 #define ARRLEN 10
+#define FALSE 0
+#define TRUE !FALSE
 
 /* Sort the elements in the array with bubble sort. */
 void sort_bubblesort(void *arr, size_t count, size_t elesize, int (*cmp)(const void *, const void *));
@@ -55,7 +57,7 @@ int main(int argc, char *argv[]) {
 
     /* Print array before and after sort. */
     printintarray(arr, ARRLEN);
-    sort_cocktailshakersort(arr, 10, sizeof (int), cmp);
+    sort_bubblesort(arr, 10, sizeof (int), cmp);
     printintarray(arr, ARRLEN);
 
     return 0;
@@ -66,6 +68,7 @@ void sort_bubblesort(void *arr, size_t count, size_t elesize, int (*cmp)(const v
         *ptrend,                   /* Pointer to last element in array. */
         *ptr1,                     /* Pointer to first element to be compared. */
         *ptr2;                     /* Pointer to second element to be compared. */
+    int isswapped = TRUE;
 
     /* Avoid unsigned arithmetic loss. */
     if (count == 0) {
@@ -76,6 +79,8 @@ void sort_bubblesort(void *arr, size_t count, size_t elesize, int (*cmp)(const v
      * elements would be correctly sorted at the end of the array.
      */
     for (ptrend = ptrstart + (count - 1) * elesize; ptrstart < ptrend; ptrend -= elesize) {
+        isswapped = FALSE;
+
         /* Iterate pairs until reach sorted end of array. */
         for (ptr1 = ptrstart, ptr2 = ptr1 + elesize; ptr1 < ptrend; ptr1 = ptr2, ptr2 = ptr1 + elesize) {
             /* Compare pair and swap larger element towards the end of the
@@ -83,7 +88,12 @@ void sort_bubblesort(void *arr, size_t count, size_t elesize, int (*cmp)(const v
              */
             if (cmp(ptr1, ptr2) > 0) {
                 memswap(ptr1, ptr2, elesize);
+                isswapped = TRUE;
             }
+        }
+
+        if (!isswapped) {
+            break;
         }
     }
 }
