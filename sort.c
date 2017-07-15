@@ -104,7 +104,8 @@ void sort_cocktailshakersort(void *arr, size_t count, size_t elesize, int (*cmp)
     char *ptrstart = (char *)arr,  /* Pointer to first element in array. */
         *ptrend,                   /* Pointer to last element in array. */
         *ptr1,                     /* Pointer to first element to be compared. */
-        *ptr2;                     /* Pointer to second element to be compared. */
+        *ptr2,                     /* Pointer to second element to be compared. */
+        *ptrlastswap;              /* Pointer to element that was last swapped. */
 
     /* Avoid unsigned arithmetic loss. */
     if (count == 0) {
@@ -116,6 +117,8 @@ void sort_cocktailshakersort(void *arr, size_t count, size_t elesize, int (*cmp)
      */
     ptrend = ptrstart + (count - 1) * elesize;
     while (ptrstart < ptrend) {
+        ptrlastswap = ptrstart;
+
         /* Iterate pairs until reach sorted end of array. */
         for (ptr1 = ptrstart, ptr2 = ptr1 + elesize; ptr1 < ptrend; ptr1 = ptr2, ptr2 = ptr1 + elesize) {
             /* Compare pair and swap larger element towards the end of the
@@ -123,9 +126,14 @@ void sort_cocktailshakersort(void *arr, size_t count, size_t elesize, int (*cmp)
              */
             if (cmp(ptr1, ptr2) > 0) {
                 memswap(ptr1, ptr2, elesize);
+                ptrlastswap = ptr1;
             }
         }
-        ptrend -= elesize;
+
+        /* The element that was last swapped closest towards the end of the
+         * array indicates this part of the array onwards is correctly sorted.
+         */
+        ptrend = ptrlastswap;
 
         /* Iterate pairs until reach sorted start of array. */
         for (ptr2 = ptrend, ptr1 = ptr2 - elesize; ptr2 > ptrstart; ptr2 = ptr1, ptr1 = ptr2 - elesize) {
@@ -134,8 +142,13 @@ void sort_cocktailshakersort(void *arr, size_t count, size_t elesize, int (*cmp)
              */
             if (cmp(ptr1, ptr2) > 0) {
                 memswap(ptr1, ptr2, elesize);
+                ptrlastswap = ptr2;
             }
         }
-        ptrstart += elesize;
+
+        /* The element that was last swapped closest towards the end of the
+         * array indicates this part of the array onwards is correctly sorted.
+         */
+        ptrstart = ptrlastswap;
     }
 }
