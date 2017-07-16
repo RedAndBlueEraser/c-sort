@@ -122,7 +122,9 @@ void sort_cocktailshakersort(void *arr, size_t count, size_t elesize, int (*cmp)
         ptrlastswap = ptrstart;
 
         /* Iterate pairs until reach sorted end of array. */
-        for (ptr1 = ptrstart, ptr2 = ptr1 + elesize; ptr1 < ptrend; ptr1 = ptr2, ptr2 = ptr1 + elesize) {
+        for (ptr1 = ptrstart; ptr1 < ptrend; ptr1 = ptr2) {
+            ptr2 = ptr1 + elesize;
+
             /* Compare pair and swap larger element towards the end of the
              * array.
              */
@@ -138,7 +140,9 @@ void sort_cocktailshakersort(void *arr, size_t count, size_t elesize, int (*cmp)
         ptrend = ptrlastswap;
 
         /* Iterate pairs until reach sorted start of array. */
-        for (ptr2 = ptrend, ptr1 = ptr2 - elesize; ptr2 > ptrstart; ptr2 = ptr1, ptr1 = ptr2 - elesize) {
+        for (ptr2 = ptrend; ptr2 > ptrstart; ptr2 = ptr1) {
+            ptr1 = ptr2 - elesize;
+
             /* Compare pair and swap larger element towards the end of the
              * array.
              */
