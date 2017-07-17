@@ -257,29 +257,35 @@ void sort_gnomesort(void *arr, size_t count, size_t elesize, int (*cmp)(const vo
     char *ptrstart = (char *)arr,  /* Pointer to first element in array. */
         *ptrend,                   /* Pointer to last element in array. */
         *ptr1,                     /* Pointer to first element to be compared. */
-        *ptr2;                     /* Pointer to second element to be compared. */
+        *ptr2,                     /* Pointer to second element to be compared. */
+        *ptr2max;                  /* Pointer to furthest element ever reached in array.*/
+
+    /* Avoid unsigned arithmetic loss. */
+    if (count == 0) {
+        return;
+    }
 
     /* Iterate until array sorted. When the last pair of elements at the end of
      * the array has been compared (and possibly swapped), then all elements
      * would be correctly sorted.
      */
     ptrend = ptrstart + (count - 1) * elesize;
-    ptr1 = ptrstart;
-    while (ptr1 < ptrend) {
-        ptr2 = ptr1 + elesize;
+    for (ptr1 = ptrstart; ptr1 < ptrend; ptr1 = ptr2) {
+        /* Store pointer to furthest element ever reached in array. */
+        ptr2max = ptr2 = ptr1 + elesize;
 
-        /* Compare pair and swap larger element towards the end of the
-         * array.
+        /* Compare pair and continuously swap smaller element as far towards the
+         * beginning of the array.
          */
-        if (cmp(ptr1, ptr2) > 0) {
+        while (ptr2 > ptrstart && cmp(ptr1, ptr2) > 0) {
             memswap(ptr1, ptr2, elesize);
-            if (ptr1 == ptrstart) {
-                ptr1 = ptr2;
-            } else {
-                ptr1 -= elesize;
-            }
-        } else {
-            ptr1 = ptr2;
+            ptr2 = ptr1;
+            ptr1 -= elesize;
         }
+
+        /* Restore pointer from furthest element to resume working in last
+         * working, important position.
+         */
+        ptr2 = ptr2max;
     }
 }
