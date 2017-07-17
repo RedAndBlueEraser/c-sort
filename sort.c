@@ -4,41 +4,18 @@
  * Written by Harry Wong (RedAndBlueEraser)
  */
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "sort.h"
 
-#define ARRLEN 10
 #define FALSE 0
 #define TRUE !FALSE
 #define SORT_COMBSORT_SHRINKFACTOR 1.3
 
-/* Print integer array. */
-void printintarray(int arr[], size_t len) {
-    size_t i;
-
-    printf("[");
-
-    /* Print first element if it exists. */
-    if (len > 0) {
-        printf("%d", arr[0]);
-    }
-    /* Print subsequent elements padded with a comma and space. */
-    for (i = 1; i < len; i++) {
-        printf(", %d", arr[i]);
-    }
-
-    printf("] @ %p\n", arr);
-}
-
-/* Comparison function to determine the sort order. */
-int cmp(const void *a, const void *b) {
-    return *(int *)b - *(int *)a;
-}
+extern int swapcount;
 
 /* Swap the specified amount of bytes between two memory areas. */
-void memswap(void *ptr1, void *ptr2, size_t len) {
+static void memswap(void *ptr1, void *ptr2, size_t len) {
     char *a = ptr1, *aend = a + len, *b = ptr2, tmp;
+    swapcount++;
     while (a < aend) {
         tmp = *a;
         *a = *b;
@@ -46,17 +23,6 @@ void memswap(void *ptr1, void *ptr2, size_t len) {
         a++;
         b++;
     }
-}
-
-int main(int argc, char *argv[]) {
-    int arr[ARRLEN] = {380, -751, 812, 542, 436, -300, 794, -978, -870, 711};
-
-    /* Print array before and after sort. */
-    printintarray(arr, ARRLEN);
-    sort_bubblesort(arr, 10, sizeof (int), cmp);
-    printintarray(arr, ARRLEN);
-
-    return 0;
 }
 
 void sort_bubblesort(void *arr, size_t count, size_t elesize, int (*cmp)(const void *, const void *)) {
