@@ -10,6 +10,7 @@
 #define ARRLEN 10
 #define FALSE 0
 #define TRUE !FALSE
+#define SORT_COMBSORT_SHRINKFACTOR 1.3
 
 /* Sort the elements in the array with bubble sort. */
 void sort_bubblesort(void *arr, size_t count, size_t elesize, int (*cmp)(const void *, const void *));
@@ -19,6 +20,9 @@ void sort_cocktailshakersort(void *arr, size_t count, size_t elesize, int (*cmp)
 
 /* Sort the elements in the array with odd-even sort. */
 void sort_oddevensort(void *arr, size_t count, size_t elesize, int (*cmp)(const void *, const void *));
+
+/* Sort the elements in the array with comb sort. */
+void sort_combsort(void *arr, size_t count, size_t elesize, int (*cmp)(const void *, const void *));
 
 /* Print integer array. */
 void printintarray(int arr[], size_t len) {
@@ -207,6 +211,41 @@ void sort_oddevensort(void *arr, size_t count, size_t elesize, int (*cmp)(const 
             }
 
             ptr1 = ptr2 + elesize;
+        }
+    }
+}
+
+void sort_combsort(void *arr, size_t count, size_t elesize, int (*cmp)(const void *, const void *)) {
+    char *ptrstart = (char *)arr,  /* Pointer to first element in array. */
+        *ptr1,                     /* Pointer to first element to be compared. */
+        *ptr2;                     /* Pointer to second element to be compared. */
+    int issorted = FALSE;          /* Boolean flag whether array is sorted. */
+    size_t gap = count,            /* Distance between elements to be compared. */
+        i;
+
+    /* Iterate until array sorted. */
+    while (!issorted) {
+        /* Determine gap with shrink factor. */
+        gap /= SORT_COMBSORT_SHRINKFACTOR;
+        if (gap > 1) {
+            issorted = FALSE;
+        } else {
+            gap = 1;
+            issorted = TRUE;
+        }
+
+        /* Iterate spaced pairs. */
+        for (i = gap; i < count; i++) {
+            ptr1 = ptrstart + (i - gap) * elesize;
+            ptr2 = ptrstart + i * elesize;
+
+            /* Compare pair and swap larger element towards the end of the
+             * array.
+             */
+            if (cmp(ptr1, ptr2) > 0) {
+                memswap(ptr1, ptr2, elesize);
+                issorted = FALSE;
+            }
         }
     }
 }
