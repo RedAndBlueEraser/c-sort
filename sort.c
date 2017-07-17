@@ -24,6 +24,9 @@ void sort_oddevensort(void *arr, size_t count, size_t elesize, int (*cmp)(const 
 /* Sort the elements in the array with comb sort. */
 void sort_combsort(void *arr, size_t count, size_t elesize, int (*cmp)(const void *, const void *));
 
+/* Sort the elements in the array with gnome sort. */
+void sort_gnomesort(void *arr, size_t count, size_t elesize, int (*cmp)(const void *, const void *));
+
 /* Print integer array. */
 void printintarray(int arr[], size_t len) {
     size_t i;
@@ -246,6 +249,37 @@ void sort_combsort(void *arr, size_t count, size_t elesize, int (*cmp)(const voi
                 memswap(ptr1, ptr2, elesize);
                 issorted = FALSE;
             }
+        }
+    }
+}
+
+void sort_gnomesort(void *arr, size_t count, size_t elesize, int (*cmp)(const void *, const void *)) {
+    char *ptrstart = (char *)arr,  /* Pointer to first element in array. */
+        *ptrend,                   /* Pointer to last element in array. */
+        *ptr1,                     /* Pointer to first element to be compared. */
+        *ptr2;                     /* Pointer to second element to be compared. */
+
+    /* Iterate until array sorted. When the last pair of elements at the end of
+     * the array has been compared (and possibly swapped), then all elements
+     * would be correctly sorted.
+     */
+    ptrend = ptrstart + (count - 1) * elesize;
+    ptr1 = ptrstart;
+    while (ptr1 < ptrend) {
+        ptr2 = ptr1 + elesize;
+
+        /* Compare pair and swap larger element towards the end of the
+         * array.
+         */
+        if (cmp(ptr1, ptr2) > 0) {
+            memswap(ptr1, ptr2, elesize);
+            if (ptr1 == ptrstart) {
+                ptr1 = ptr2;
+            } else {
+                ptr1 -= elesize;
+            }
+        } else {
+            ptr1 = ptr2;
         }
     }
 }
