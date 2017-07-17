@@ -238,10 +238,9 @@ void sort_combsort(void *arr, size_t count, size_t elesize, int (*cmp)(const voi
         }
 
         /* Iterate spaced pairs. */
+        ptr1 = ptrstart;
+        ptr2 = ptr1 + gap * elesize;
         for (i = gap; i < count; i++) {
-            ptr1 = ptrstart + (i - gap) * elesize;
-            ptr2 = ptrstart + i * elesize;
-
             /* Compare pair and swap larger element towards the end of the
              * array.
              */
@@ -249,6 +248,9 @@ void sort_combsort(void *arr, size_t count, size_t elesize, int (*cmp)(const voi
                 memswap(ptr1, ptr2, elesize);
                 issorted = FALSE;
             }
+
+            ptr1 += elesize;
+            ptr2 += elesize;
         }
     }
 }
