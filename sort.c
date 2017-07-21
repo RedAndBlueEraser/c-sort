@@ -243,3 +243,28 @@ void sort_gnomesort(void *arr, size_t count, size_t elesize, int (*cmp)(const vo
         ptr2 = ptr2max;
     }
 }
+
+void sort_stoogesort(void *arr, size_t count, size_t elesize, int (*cmp)(const void *, const void *)) {
+    char *ptrstart = (char *)arr,  /* Pointer to first element in array. */
+        *ptrend;                   /* Pointer to last element in array. */
+    size_t ndivide3,               /* Count divided by three. */
+        nlessndivide3;             /* Count minus count divided by three. */
+
+    /* Avoid unsigned arithmetic loss. */
+    if (count == 0) {
+        return;
+    }
+
+    ptrend = ptrstart + (count - 1) * elesize;
+    if (cmp(ptrstart, ptrend) > 0) {
+        memswap(ptrstart, ptrend, elesize);
+    }
+
+    if (count >= 3) {
+        ndivide3 = count / 3;
+        nlessndivide3 = count - ndivide3;
+        sort_stoogesort(ptrstart, nlessndivide3, elesize, cmp);
+        sort_stoogesort(ptrstart + ndivide3 * elesize, nlessndivide3, elesize, cmp);
+        sort_stoogesort(ptrstart, nlessndivide3, elesize, cmp);
+    }
+}
