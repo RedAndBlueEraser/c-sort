@@ -26,8 +26,8 @@ static void memswap(void *ptr1, void *ptr2, size_t len) {
 }
 
 void sort_bubblesort(void *arr, size_t count, size_t elesize, int (*cmp)(const void *, const void *)) {
-    char *ptrstart = (char *)arr,  /* Pointer to first element in array. */
-        *ptrend,                   /* Pointer to last element in array. */
+    char *ptrfirst = (char *)arr,  /* Pointer to first element in array. */
+        *ptrlast,                  /* Pointer to last element in array. */
         *ptr1,                     /* Pointer to first element to be compared. */
         *ptr2,                     /* Pointer to second element to be compared. */
         *ptrlastswap;              /* Pointer to first element that was last swapped. */
@@ -40,12 +40,12 @@ void sort_bubblesort(void *arr, size_t count, size_t elesize, int (*cmp)(const v
     /* Iterate until array sorted. After the n'th iteration, at least the n
      * largest elements is correctly sorted at the end of the array.
      */
-    ptrend = ptrstart + (count - 1) * elesize;
-    while (ptrstart < ptrend) {
-        ptrlastswap = ptrstart;
+    ptrlast = ptrfirst + (count - 1) * elesize;
+    while (ptrfirst < ptrlast) {
+        ptrlastswap = ptrfirst;
 
         /* Iterate pairs until reach sorted end of array. */
-        for (ptr1 = ptrstart; ptr1 < ptrend; ptr1 = ptr2) {
+        for (ptr1 = ptrfirst; ptr1 < ptrlast; ptr1 = ptr2) {
             ptr2 = ptr1 + elesize;
 
             /* Compare pair and swap larger element towards the end of the
@@ -60,13 +60,13 @@ void sort_bubblesort(void *arr, size_t count, size_t elesize, int (*cmp)(const v
         /* The element that was last swapped closest towards the end of the
          * array indicates this part of the array onwards is correctly sorted.
          */
-        ptrend = ptrlastswap;
+        ptrlast = ptrlastswap;
     }
 }
 
 void sort_cocktailshakersort(void *arr, size_t count, size_t elesize, int (*cmp)(const void *, const void *)) {
-    char *ptrstart = (char *)arr,  /* Pointer to first element in array. */
-        *ptrend,                   /* Pointer to last element in array. */
+    char *ptrfirst = (char *)arr,  /* Pointer to first element in array. */
+        *ptrlast,                  /* Pointer to last element in array. */
         *ptr1,                     /* Pointer to first element to be compared. */
         *ptr2,                     /* Pointer to second element to be compared. */
         *ptrlastswap;              /* Pointer to element that was last swapped. */
@@ -79,12 +79,12 @@ void sort_cocktailshakersort(void *arr, size_t count, size_t elesize, int (*cmp)
     /* Iterate until array sorted. After the n'th iteration, the n smallest and
      * n largest elements would be correctly sorted at the end of the array.
      */
-    ptrend = ptrstart + (count - 1) * elesize;
-    while (ptrstart < ptrend) {
-        ptrlastswap = ptrstart;
+    ptrlast = ptrfirst + (count - 1) * elesize;
+    while (ptrfirst < ptrlast) {
+        ptrlastswap = ptrfirst;
 
         /* Iterate pairs until reach sorted end of array. */
-        for (ptr1 = ptrstart; ptr1 < ptrend; ptr1 = ptr2) {
+        for (ptr1 = ptrfirst; ptr1 < ptrlast; ptr1 = ptr2) {
             ptr2 = ptr1 + elesize;
 
             /* Compare pair and swap larger element towards the end of the
@@ -99,10 +99,10 @@ void sort_cocktailshakersort(void *arr, size_t count, size_t elesize, int (*cmp)
         /* The element that was last swapped closest towards the end of the
          * array indicates this part of the array onwards is correctly sorted.
          */
-        ptrend = ptrlastswap;
+        ptrlast = ptrlastswap;
 
         /* Iterate pairs until reach sorted start of array. */
-        for (ptr2 = ptrend; ptr2 > ptrstart; ptr2 = ptr1) {
+        for (ptr2 = ptrlast; ptr2 > ptrfirst; ptr2 = ptr1) {
             ptr1 = ptr2 - elesize;
 
             /* Compare pair and swap larger element towards the end of the
@@ -117,13 +117,13 @@ void sort_cocktailshakersort(void *arr, size_t count, size_t elesize, int (*cmp)
         /* The element that was last swapped closest towards the end of the
          * array indicates this part of the array onwards is correctly sorted.
          */
-        ptrstart = ptrlastswap;
+        ptrfirst = ptrlastswap;
     }
 }
 
 void sort_oddevensort(void *arr, size_t count, size_t elesize, int (*cmp)(const void *, const void *)) {
-    char *ptrstart = (char *)arr,  /* Pointer to first element in array. */
-        *ptrend,                   /* Pointer to last element in array. */
+    char *ptrfirst = (char *)arr,  /* Pointer to first element in array. */
+        *ptrlast,                  /* Pointer to last element in array. */
         *ptr1,                     /* Pointer to first element to be compared. */
         *ptr2;                     /* Pointer to second element to be compared. */
     int issorted = FALSE;          /* Boolean flag whether array is sorted. */
@@ -134,12 +134,12 @@ void sort_oddevensort(void *arr, size_t count, size_t elesize, int (*cmp)(const 
     }
 
     /* Iterate until array sorted. */
-    ptrend = ptrstart + (count - 1) * elesize;
+    ptrlast = ptrfirst + (count - 1) * elesize;
     while (!issorted) {
         issorted = TRUE;
 
         /* Iterate even index starting pairs. */
-        for (ptr1 = ptrstart; ptr1 < ptrend; ptr1 = ptr2 + elesize) {
+        for (ptr1 = ptrfirst; ptr1 < ptrlast; ptr1 = ptr2 + elesize) {
             ptr2 = ptr1 + elesize;
 
             /* Compare pair and swap larger element towards the end of the
@@ -154,7 +154,7 @@ void sort_oddevensort(void *arr, size_t count, size_t elesize, int (*cmp)(const 
         }
 
         /* Iterate odd index starting pairs. */
-        for (ptr1 = ptrstart + elesize; ptr1 < ptrend; ptr1 = ptr2 + elesize) {
+        for (ptr1 = ptrfirst + elesize; ptr1 < ptrlast; ptr1 = ptr2 + elesize) {
             ptr2 = ptr1 + elesize;
 
             /* Compare pair and swap larger element towards the end of the
@@ -171,7 +171,7 @@ void sort_oddevensort(void *arr, size_t count, size_t elesize, int (*cmp)(const 
 }
 
 void sort_combsort(void *arr, size_t count, size_t elesize, int (*cmp)(const void *, const void *)) {
-    char *ptrstart = (char *)arr,  /* Pointer to first element in array. */
+    char *ptrfirst = (char *)arr,  /* Pointer to first element in array. */
         *ptr1,                     /* Pointer to first element to be compared. */
         *ptr2;                     /* Pointer to second element to be compared. */
     int issorted = FALSE;          /* Boolean flag whether array is sorted. */
@@ -190,7 +190,7 @@ void sort_combsort(void *arr, size_t count, size_t elesize, int (*cmp)(const voi
         }
 
         /* Iterate spaced pairs. */
-        ptr1 = ptrstart;
+        ptr1 = ptrfirst;
         ptr2 = ptr1 + gap * elesize;
         for (i = gap; i < count; i++) {
             /* Compare pair and swap larger element towards the end of the
@@ -208,8 +208,8 @@ void sort_combsort(void *arr, size_t count, size_t elesize, int (*cmp)(const voi
 }
 
 void sort_gnomesort(void *arr, size_t count, size_t elesize, int (*cmp)(const void *, const void *)) {
-    char *ptrstart = (char *)arr,  /* Pointer to first element in array. */
-        *ptrend,                   /* Pointer to last element in array. */
+    char *ptrfirst = (char *)arr,  /* Pointer to first element in array. */
+        *ptrlast,                  /* Pointer to last element in array. */
         *ptr1,                     /* Pointer to first element to be compared. */
         *ptr2,                     /* Pointer to second element to be compared. */
         *ptr2max;                  /* Pointer to furthest element ever reached in array.*/
@@ -223,15 +223,15 @@ void sort_gnomesort(void *arr, size_t count, size_t elesize, int (*cmp)(const vo
      * the array has been compared (and possibly swapped), then all elements
      * would be correctly sorted.
      */
-    ptrend = ptrstart + (count - 1) * elesize;
-    for (ptr1 = ptrstart; ptr1 < ptrend; ptr1 = ptr2) {
+    ptrlast = ptrfirst + (count - 1) * elesize;
+    for (ptr1 = ptrfirst; ptr1 < ptrlast; ptr1 = ptr2) {
         /* Store pointer to furthest element ever reached in array. */
         ptr2max = ptr2 = ptr1 + elesize;
 
         /* Compare pair and continuously swap smaller element as far towards the
          * beginning of the array.
          */
-        while (ptr2 > ptrstart && cmp(ptr1, ptr2) > 0) {
+        while (ptr2 > ptrfirst && cmp(ptr1, ptr2) > 0) {
             memswap(ptr1, ptr2, elesize);
             ptr2 = ptr1;
             ptr1 -= elesize;
@@ -245,8 +245,8 @@ void sort_gnomesort(void *arr, size_t count, size_t elesize, int (*cmp)(const vo
 }
 
 void sort_stoogesort(void *arr, size_t count, size_t elesize, int (*cmp)(const void *, const void *)) {
-    char *ptrstart = (char *)arr,  /* Pointer to first element in array. */
-        *ptrend;                   /* Pointer to last element in array. */
+    char *ptrfirst = (char *)arr,  /* Pointer to first element in array. */
+        *ptrlast;                  /* Pointer to last element in array. */
     size_t ndivide3,               /* Count divided by three. */
         nlessndivide3;             /* Count minus count divided by three. */
 
@@ -255,16 +255,16 @@ void sort_stoogesort(void *arr, size_t count, size_t elesize, int (*cmp)(const v
         return;
     }
 
-    ptrend = ptrstart + (count - 1) * elesize;
-    if (cmp(ptrstart, ptrend) > 0) {
-        memswap(ptrstart, ptrend, elesize);
+    ptrlast = ptrfirst + (count - 1) * elesize;
+    if (cmp(ptrfirst, ptrlast) > 0) {
+        memswap(ptrfirst, ptrlast, elesize);
     }
 
     if (count >= 3) {
         ndivide3 = count / 3;
         nlessndivide3 = count - ndivide3;
-        sort_stoogesort(ptrstart, nlessndivide3, elesize, cmp);
-        sort_stoogesort(ptrstart + ndivide3 * elesize, nlessndivide3, elesize, cmp);
-        sort_stoogesort(ptrstart, nlessndivide3, elesize, cmp);
+        sort_stoogesort(ptrfirst, nlessndivide3, elesize, cmp);
+        sort_stoogesort(ptrfirst + ndivide3 * elesize, nlessndivide3, elesize, cmp);
+        sort_stoogesort(ptrfirst, nlessndivide3, elesize, cmp);
     }
 }
