@@ -255,11 +255,17 @@ void sort_stoogesort(void *arr, size_t count, size_t elesize, int (*cmp)(const v
         return;
     }
 
+    /* Compare first and last elements and swap larger element to the end of the
+     * array.
+     */
     ptrlast = ptrfirst + (count - 1) * elesize;
     if (cmp(ptrfirst, ptrlast) > 0) {
         memswap(ptrfirst, ptrlast, elesize);
     }
 
+    /* Recursively sort first 2/3, last 2/3, and then first 2/3 again of the
+     * array when there are three or more elements.
+     */
     if (count >= 3) {
         ndivide3 = count / 3;
         nlessndivide3 = count - ndivide3;
