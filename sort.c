@@ -269,8 +269,8 @@ void sort_stoogesort(void *arr, size_t count, size_t elesize, int (*cmp)(const v
     if (count >= 3) {
         ndivide3 = count / 3;
         nlessndivide3 = count - ndivide3;
-        sort_stoogesort(ptrfirst, nlessndivide3, elesize, cmp);
-        sort_stoogesort(ptrfirst + ndivide3 * elesize, nlessndivide3, elesize, cmp);
-        sort_stoogesort(ptrfirst, nlessndivide3, elesize, cmp);
+        sort_stoogesort(arr, nlessndivide3, elesize, cmp);
+        sort_stoogesort((void *)(ptrfirst + ndivide3 * elesize), nlessndivide3, elesize, cmp);
+        sort_stoogesort(arr, nlessndivide3, elesize, cmp);
     }
 }
