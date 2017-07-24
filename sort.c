@@ -14,7 +14,7 @@ extern int swapcount;
 
 /* Swap the specified amount of bytes between two memory areas. */
 static void memswap(void *ptr1, void *ptr2, size_t len) {
-    char *a = ptr1, *aend = a + len, *b = ptr2, tmp;
+    char *a = (char *)ptr1, *aend = a + len, *b = (char *)ptr2, tmp;
     swapcount++;
     while (a < aend) {
         tmp = *a;
