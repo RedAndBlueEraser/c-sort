@@ -357,6 +357,41 @@ void sort_quicksort(void *arr, size_t count, size_t elesize, int (*cmp)(const vo
     sort_quicksort((void *)ptrfirstgt, count - ifirstgt, elesize, cmp);
 }
 
+void sort_slowsort(void *arr, size_t count, size_t elesize, int (*cmp)(const void *, const void *)) {
+    char *ptrfirst = (char *)arr,  /* Pointer to first element in array. */
+        *ptrmiddle,                /* Pointer to middle element in array. */
+        *ptrmiddleprev,            /* Pointer to element before middle element in array. */
+        *ptrlast;                  /* Pointer to last element in array. */
+    size_t ndivide2,               /* Count divided by two. */
+        nlessndivide2,             /* Count minus count divided by two. */
+        nless1;                    /* Count minus one. */
+
+    /* Don't need to sort arrays with one or less elements. */
+    if (count <= 1) {
+        return;
+    }
+
+    /* Recursively sort first and second halves of the array. */
+    ndivide2 = count / 2;
+    ptrmiddle = ptrfirst + ndivide2 * elesize;
+    nlessndivide2 = count - ndivide2;
+    sort_slowsort(arr, ndivide2, elesize, cmp);
+    sort_slowsort((void *)ptrmiddle, nlessndivide2, elesize, cmp);
+
+    /* Compare last element of first half and last element of second half of the
+     * array and swap larger element to the end of the array.
+     */
+    ptrmiddleprev = ptrmiddle - elesize;
+    nless1 = count - 1;
+    ptrlast = ptrfirst + nless1 * elesize;
+    if (cmp(ptrmiddleprev, ptrlast) > 0) {
+        memswap(ptrmiddleprev, ptrlast, elesize);
+    }
+
+    /* Recursively sort array without last, largest element. */
+    sort_slowsort(arr, nless1, elesize, cmp);
+}
+
 void sort_stoogesort(void *arr, size_t count, size_t elesize, int (*cmp)(const void *, const void *)) {
     char *ptrfirst = (char *)arr,  /* Pointer to first element in array. */
         *ptrlast;                  /* Pointer to last element in array. */
