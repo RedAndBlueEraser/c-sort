@@ -37,3 +37,7 @@ void sort_slowsort(void *arr, size_t count, size_t elesize,
 /* Sort the elements in the array with stooge sort. */
 void sort_stoogesort(void *arr, size_t count, size_t elesize,
     int (*cmp)(const void *, const void *));
+
+/* Sort the elements in the array with selection sort. */
+void sort_selectionsort(void *arr, size_t count, size_t elesize,
+    int (*cmp)(const void *, const void *));

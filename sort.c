@@ -422,3 +422,41 @@ void sort_stoogesort(void *arr, size_t count, size_t elesize, int (*cmp)(const v
         sort_stoogesort(arr, nlessndivide3, elesize, cmp);
     }
 }
+
+void sort_selectionsort(void *arr, size_t count, size_t elesize, int (*cmp)(const void *, const void *)) {
+    char *ptrfirst = (char *)arr,  /* Pointer to first element in array. */
+        *ptrlast,                  /* Pointer to last element in array. */
+        *ptrmin,                   /* Pointer to smallest element in array. */
+        *ptr;                      /* Pointer to element to be compared. */
+    size_t n = count,              /* Length of unsorted portion of array. */
+        i;
+
+    /* Avoid unsigned arithmetic loss. */
+    if (count == 0) {
+        return;
+    }
+
+    /* Iterate until array sorted. After the n'th iteration, at least the n
+     * smallest elements is correctly sorted at the start of the array.
+     */
+    ptrlast = ptrfirst + (count - 1) * elesize;
+    while (ptrfirst < ptrlast) {
+        /* Find smallest element in array. */
+        ptrmin = ptrfirst;
+        ptr = ptrfirst + elesize;
+        for (i = 1; i < n; i++) {
+            if (cmp(ptrmin, ptr) > 0) {
+                ptrmin = ptr;
+            }
+            ptr += elesize;
+        }
+
+        /* Swap smallest element towards the start of the array (to the start of
+         * unsorted portion of array).
+         */
+        memswap(ptrfirst, ptrmin, elesize);
+
+        ptrfirst += elesize;
+        n--;
+    }
+}
