@@ -244,10 +244,9 @@ void sort_gnomesort(void *arr, size_t count, size_t elesize, int (*cmp)(const vo
     }
 }
 
-static char *sort_quicksort_partition_med3(void *arr, size_t count, size_t elesize, int (*cmp)(const void *, const void *)) {
-    char *ptr1 = (char *)arr,  /* Pointer to first element in array. */
-        *ptr2,                 /* Pointer to middle element in array. */
-        *ptr3;                 /* Pointer to last element in array. */
+static char *sort_quicksort_partition_med3(char *ptr1, size_t count, size_t elesize, int (*cmp)(const void *, const void *)) {
+    char *ptr2,  /* Pointer to middle element in array. */
+        *ptr3;   /* Pointer to last element in array. */
 
     /* Median of array with one or two elements is the first element. */
     if (count <= 2) {
@@ -287,7 +286,7 @@ static void sort_quicksort_partition(void *arr, size_t count, size_t elesize, in
     int cmpresult;                 /* Result of comparison between elements. */
 
     /* Determine pivot element with median-of-three. */
-    ptrpivot = sort_quicksort_partition_med3(arr, count, elesize, cmp);
+    ptrpivot = sort_quicksort_partition_med3(ptrfirst, count, elesize, cmp);
 
     /* Iterate until array partitioned. */
     ptrcurr = ptrfirsteq = ptrfirst;
