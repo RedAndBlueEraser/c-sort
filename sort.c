@@ -183,39 +183,31 @@ void sort_combsort(void *arr, size_t count, size_t elesize, int (*cmp)(const voi
 }
 
 void sort_gnomesort(void *arr, size_t count, size_t elesize, int (*cmp)(const void *, const void *)) {
-    char *ptrfirst = (char *)arr,  /* Pointer to first element in array. */
-        *ptrlast,                  /* Pointer to last element in array. */
-        *ptr1,                     /* Pointer to first element to be compared. */
-        *ptr2,                     /* Pointer to second element to be compared. */
-        *ptr2max;                  /* Pointer to furthest element ever reached in array.*/
+    char *ptrstart = (char *)arr,              /* Pointer to start of array. */
+        *ptrend = ptrstart + count * elesize,  /* Pointer to end of unsorted portion of array. */
+        *ptr1,                                 /* Pointer to first element to be compared. */
+        *ptr2,                                 /* Pointer to second element to be compared. */
+        *ptrlastcmp;                           /* Pointer to furthest element that was last compared. */
 
-    /* Avoid unsigned arithmetic loss. */
+    /* Avoid comparing against overflowed pointer. */
     if (count == 0) {
         return;
     }
 
-    /* Iterate until array sorted. When the last pair of elements at the end of
-     * the array has been compared (and possibly swapped), then all elements
-     * would be correctly sorted.
+    /* Iterate until the entire array is sorted. After the n'th iteration, at
+     * least the n elements are sorted (but may not be in the correct position)
+     * at the start of the array.
      */
-    ptrlast = ptrfirst + (count - 1) * elesize;
-    for (ptr1 = ptrfirst; ptr1 < ptrlast; ptr1 = ptr2) {
-        /* Store pointer to furthest element ever reached in array. */
-        ptr2max = ptr2 = ptr1 + elesize;
-
-        /* Compare pair and continuously swap smaller element as far towards the
-         * beginning of the array.
+    for (ptr1 = ptrstart, ptrlastcmp = ptr2 = ptr1 + elesize; ptr2 < ptrend; ptr1 = ptrlastcmp, ptrlastcmp = ptr2 = ptr1 + elesize) {
+        /* Step through each pair of elements from the n'th element in the array
+         * to the start of the array, compare them, and swap them if out of
+         * order.
          */
-        while (ptr2 > ptrfirst && cmp(ptr1, ptr2) > 0) {
+        while (ptr2 > ptrstart && cmp(ptr1, ptr2) > 0) {
             memswap(ptr1, ptr2, elesize);
             ptr2 = ptr1;
             ptr1 -= elesize;
         }
-
-        /* Restore pointer from furthest element to resume working in last
-         * working, important position.
-         */
-        ptr2 = ptr2max;
     }
 }
 
