@@ -45,3 +45,7 @@ void sort_selectionsort(void *arr, size_t count, size_t elesize,
 /* Sort the elements in the array with heapsort. */
 void sort_heapsort(void *arr, size_t count, size_t elesize,
     int (*cmp)(const void *, const void *));
+
+/* Sort the elements in the array with insertion sort. */
+void sort_insertionsort(void *arr, size_t count, size_t elesize,
+    int (*cmp)(const void *, const void *));

@@ -540,3 +540,38 @@ void sort_heapsort(void *arr, size_t count, size_t elesize, int (*cmp)(const voi
         i--;
     }
 }
+
+void sort_insertionsort(void *arr, size_t count, size_t elesize, int (*cmp)(const void *, const void *)) {
+    char *ptrfirst = (char *)arr,  /* Pointer to first element in array. */
+        *ptr1,                     /* Pointer to element to be compared. */
+        *ptr2,                     /* Pointer to element to be swapped. */
+        *ptrlastswap;              /* Pointer to furthest element that was last swapped. */
+    size_t i, j;
+
+    /* Iterate until array sorted. After the n'th iteration, at least n elements
+     * is sorted at the start of the array. At each iteration, insert the next
+     * element into the correct position of the sorted portion of the array,
+     * possibly shifting other sorted elements.
+     */
+    ptr1 = ptrfirst + elesize;
+    for (i = 1; i < count; i++) {
+        /* Store pointer to furthest element ever reached in array. */
+        ptrlastswap = ptr1;
+
+        /* Compare and contiuously swap element towards the beginning of the
+         * array until reach correct position.
+         */
+        j = i;
+        ptr2 = ptr1 - elesize;
+        while (j-- > 0 && cmp(ptr2, ptr1) > 0) {
+            memswap(ptr1, ptr2, elesize);
+            ptr1 = ptr2;
+            ptr2 -= elesize;
+        }
+
+        /* The element that was last swapped closest towards the end of the
+         * array indicates this part of the array onwards is not sorted.
+         */
+        ptr1 = ptrlastswap + elesize;
+    }
+}
