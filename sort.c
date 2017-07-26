@@ -59,59 +59,56 @@ void sort_bubblesort(void *arr, size_t count, size_t elesize, int (*cmp)(const v
 }
 
 void sort_cocktailshakersort(void *arr, size_t count, size_t elesize, int (*cmp)(const void *, const void *)) {
-    char *ptrfirst = (char *)arr,  /* Pointer to first element in array. */
-        *ptrlast,                  /* Pointer to last element in array. */
-        *ptr1,                     /* Pointer to first element to be compared. */
-        *ptr2,                     /* Pointer to second element to be compared. */
-        *ptrlastswap;              /* Pointer to element that was last swapped. */
+    char *ptrstart = (char *)arr,              /* Pointer to start of unsorted portion of array. */
+        *ptrend = ptrstart + count * elesize,  /* Pointer to end of unsorted portion of array. */
+        *ptr1,                                 /* Pointer to first element to be compared. */
+        *ptr2,                                 /* Pointer to second element to be compared. */
+        *ptrlastswap;                          /* Pointer to furthest element that was last swapped. */
 
-    /* Avoid unsigned arithmetic loss. */
-    if (count == 0) {
-        return;
-    }
-
-    /* Iterate until array sorted. After the n'th iteration, the n smallest and
-     * n largest elements would be correctly sorted at the end of the array.
+    /* Iterate until the entire array is sorted. After the n'th iteration, at
+     * least the n smallest and n largest elements are correctly positioned at
+     * the start and end of the array, respectively. Only the unsorted portion
+     * of the array is traversed through.
      */
-    ptrlast = ptrfirst + (count - 1) * elesize;
-    while (ptrfirst < ptrlast) {
-        ptrlastswap = ptrfirst;
+    while (ptrstart < ptrend) {
+        /* Store the furthest element that is swapped. */
+        ptrlastswap = ptrstart;
 
-        /* Iterate pairs until reach sorted end of array. */
-        for (ptr1 = ptrfirst; ptr1 < ptrlast; ptr1 = ptr2) {
-            ptr2 = ptr1 + elesize;
-
-            /* Compare pair and swap larger element towards the end of the
-             * array.
-             */
-            if (cmp(ptr1, ptr2) > 0) {
-                memswap(ptr1, ptr2, elesize);
-                ptrlastswap = ptr1;
-            }
-        }
-
-        /* The element that was last swapped closest towards the end of the
-         * array indicates this part of the array onwards is correctly sorted.
+        /* Step through each pair of elements from the start of the unsorted
+         * portion of the array to the end of the unsorted portion of the array,
+         * compare them, and swap them if out of order.
          */
-        ptrlast = ptrlastswap;
-
-        /* Iterate pairs until reach sorted start of array. */
-        for (ptr2 = ptrlast; ptr2 > ptrfirst; ptr2 = ptr1) {
-            ptr1 = ptr2 - elesize;
-
-            /* Compare pair and swap larger element towards the end of the
-             * array.
-             */
+        for (ptr1 = ptrstart, ptr2 = ptr1 + elesize; ptr2 < ptrend; ptr1 = ptr2, ptr2 += elesize) {
             if (cmp(ptr1, ptr2) > 0) {
                 memswap(ptr1, ptr2, elesize);
                 ptrlastswap = ptr2;
             }
         }
 
-        /* The element that was last swapped closest towards the end of the
-         * array indicates this part of the array onwards is correctly sorted.
+        /* Mark the furthest element that was last swapped as the end of the
+         * unsorted portion of the array.
          */
-        ptrfirst = ptrlastswap;
+        ptrend = ptrlastswap;
+
+        if (!(ptrstart < ptrend)) {
+            break;
+        }
+
+        /* Step through each pair of elements from the end of the unsorted
+         * portion of the array to the start of the unsorted portion of the
+         * array, compare them, and swap them if out of order.
+         */
+        for (ptr2 = ptrend - elesize, ptr1 = ptr2 - elesize; ptr2 > ptrstart; ptr2 = ptr1, ptr1 -= elesize) {
+            if (cmp(ptr1, ptr2) > 0) {
+                memswap(ptr1, ptr2, elesize);
+                ptrlastswap = ptr2;
+            }
+        }
+
+        /* Mark the furthest element that was last swapped as the start of the
+         * unsorted portion of the array.
+         */
+        ptrstart = ptrlastswap;
     }
 }
 
