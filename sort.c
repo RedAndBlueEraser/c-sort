@@ -113,50 +113,39 @@ void sort_cocktailshakersort(void *arr, size_t count, size_t elesize, int (*cmp)
 }
 
 void sort_oddevensort(void *arr, size_t count, size_t elesize, int (*cmp)(const void *, const void *)) {
-    char *ptrfirst = (char *)arr,  /* Pointer to first element in array. */
-        *ptrlast,                  /* Pointer to last element in array. */
-        *ptr1,                     /* Pointer to first element to be compared. */
-        *ptr2;                     /* Pointer to second element to be compared. */
-    int issorted = FALSE;          /* Boolean flag whether array is sorted. */
+    char *ptrstart = (char *)arr,              /* Pointer to start of array. */
+        *ptrend = ptrstart + count * elesize,  /* Pointer to end of array. */
+        *ptr1,                                 /* Pointer to first element to be compared. */
+        *ptr2,                                 /* Pointer to second element to be compared. */
+        issorted = !count;                     /* Boolean flag whether array is sorted. */
 
-    /* Avoid unsigned arithmetic loss. */
-    if (count == 0) {
-        return;
-    }
-
-    /* Iterate until array sorted. */
-    ptrlast = ptrfirst + (count - 1) * elesize;
+    /* Iterate until the entire array is sorted. */
     while (!issorted) {
+        /* Flag whether the array is sorted. If a swap occurs, the array is not
+         * sorted.
+         */
         issorted = TRUE;
 
-        /* Iterate even index starting pairs. */
-        for (ptr1 = ptrfirst; ptr1 < ptrlast; ptr1 = ptr2 + elesize) {
-            ptr2 = ptr1 + elesize;
-
-            /* Compare pair and swap larger element towards the end of the
-             * array.
-             */
+        /* Step through each pair of elements with an even indexed first element
+         * from the start of the array to the end of the array, compare them,
+         * and swap them if out of order.
+         */
+        for (ptr1 = ptrstart, ptr2 = ptr1 + elesize; ptr1 < ptr2 && ptr2 < ptrend; ptr1 = ptr2 + elesize, ptr2 = ptr1 + elesize) {
             if (cmp(ptr1, ptr2) > 0) {
                 memswap(ptr1, ptr2, elesize);
                 issorted = FALSE;
             }
-
-            ptr1 = ptr2 + elesize;
         }
 
-        /* Iterate odd index starting pairs. */
-        for (ptr1 = ptrfirst + elesize; ptr1 < ptrlast; ptr1 = ptr2 + elesize) {
-            ptr2 = ptr1 + elesize;
-
-            /* Compare pair and swap larger element towards the end of the
-             * array.
-             */
+        /* Step through each pair of elements with an odd indexed first element
+         * from the start of the array to the end of the array, compare them,
+         * and swap them if out of order.
+         */
+        for (ptr1 = ptrstart + elesize, ptr2 = ptr1 + elesize; ptr1 < ptr2 && ptr2 < ptrend; ptr1 = ptr2 + elesize, ptr2 = ptr1 + elesize) {
             if (cmp(ptr1, ptr2) > 0) {
                 memswap(ptr1, ptr2, elesize);
                 issorted = FALSE;
             }
-
-            ptr1 = ptr2 + elesize;
         }
     }
 }
