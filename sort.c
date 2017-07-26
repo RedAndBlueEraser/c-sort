@@ -151,38 +151,33 @@ void sort_oddevensort(void *arr, size_t count, size_t elesize, int (*cmp)(const 
 }
 
 void sort_combsort(void *arr, size_t count, size_t elesize, int (*cmp)(const void *, const void *)) {
-    char *ptrfirst = (char *)arr,  /* Pointer to first element in array. */
-        *ptr1,                     /* Pointer to first element to be compared. */
-        *ptr2;                     /* Pointer to second element to be compared. */
-    int issorted = FALSE;          /* Boolean flag whether array is sorted. */
-    size_t gap = count,            /* Distance between elements to be compared. */
-        i;
+    char *ptrstart = (char *)arr,              /* Pointer to start of array. */
+        *ptrend = ptrstart + count * elesize,  /* Pointer to end of array. */
+        *ptr1,                                 /* Pointer to first element to be compared. */
+        *ptr2,                                 /* Pointer to second element to be compared. */
+        issorted = !count;                     /* Boolean flag whether array is sorted. */
+    size_t gap = count;                        /* Distance between elements to be compared. */
 
-    /* Iterate until array sorted. */
+    /* Iterate until the entire array is sorted. */
     while (!issorted) {
-        /* Determine gap with shrink factor. */
+        /* Calculate gap with previous gap and shrink factor. */
+        /* Flag whether the array is sorted. If the gap is greater than 1, or a
+         * swap occurs, the array is not sorted.
+         */
         gap /= SORT_COMBSORT_SHRINKFACTOR;
-        if (gap > 1) {
-            issorted = FALSE;
-        } else {
-            gap = 1;
+        if (gap <= 1) {
             issorted = TRUE;
+            gap = 1;
         }
 
-        /* Iterate spaced pairs. */
-        ptr1 = ptrfirst;
-        ptr2 = ptr1 + gap * elesize;
-        for (i = gap; i < count; i++) {
-            /* Compare pair and swap larger element towards the end of the
-             * array.
-             */
+        /* Step through each pair of spaced elements from the start of the array
+         * to the end of the array, compare them, and swap them if out of order.
+         */
+        for (ptr1 = ptrstart, ptr2 = ptr1 + gap * elesize; ptr2 < ptrend; ptr1 += elesize, ptr2 += elesize) {
             if (cmp(ptr1, ptr2) > 0) {
                 memswap(ptr1, ptr2, elesize);
                 issorted = FALSE;
             }
-
-            ptr1 += elesize;
-            ptr2 += elesize;
         }
     }
 }
