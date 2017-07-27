@@ -504,36 +504,23 @@ void sort_heapsort(void *arr, size_t count, size_t elesize, int (*cmp)(const voi
 }
 
 void sort_insertionsort(void *arr, size_t count, size_t elesize, int (*cmp)(const void *, const void *)) {
-    char *ptrfirst = (char *)arr,  /* Pointer to first element in array. */
-        *ptr1,                     /* Pointer to element to be compared. */
-        *ptr2,                     /* Pointer to element to be swapped. */
-        *ptrlastswap;              /* Pointer to furthest element that was last swapped. */
-    size_t i, j;
+    char *ptrstart = (char *)arr,              /* Pointer to start of array. */
+        *ptrend = ptrstart + count * elesize,  /* Pointer to end of array. */
+        *ptrcurr,                              /* Pointer to element to be compared. */
+        *ptr1,                                 /* Pointer to first element to be compared. */
+        *ptr2;                                 /* Pointer to second element to be compared. */
 
-    /* Iterate until array sorted. After the n'th iteration, at least n elements
-     * is sorted at the start of the array. At each iteration, insert the next
-     * element into the correct position of the sorted portion of the array,
-     * possibly shifting other sorted elements.
+    /* Iterate until the entire array is traversed. After the n'th iteration, at
+     * least the n elements are sorted (but may not be in the correct position)
+     * at the start of the array.
      */
-    ptr1 = ptrfirst + elesize;
-    for (i = 1; i < count; i++) {
-        /* Store pointer to furthest element ever reached in array. */
-        ptrlastswap = ptr1;
-
-        /* Compare and contiuously swap element towards the beginning of the
-         * array until reach correct position.
+    for (ptrcurr = ptrstart; ptrcurr < ptrend; ptrcurr += elesize) {
+        /* Step through each pair of elements from the n'th element in the array
+         * to the start of the array, compare them, and swap them if out of
+         * order.
          */
-        j = i;
-        ptr2 = ptr1 - elesize;
-        while (j-- > 0 && cmp(ptr2, ptr1) > 0) {
+        for (ptr2 = ptrcurr, ptr1 = ptr2 - elesize; ptr2 > ptrstart && cmp(ptr1, ptr2) > 0; ptr2 = ptr1, ptr1 -= elesize) {
             memswap(ptr1, ptr2, elesize);
-            ptr1 = ptr2;
-            ptr2 -= elesize;
         }
-
-        /* The element that was last swapped closest towards the end of the
-         * array indicates this part of the array onwards is not sorted.
-         */
-        ptr1 = ptrlastswap + elesize;
     }
 }
