@@ -215,13 +215,15 @@ static char *sort_quicksort_partition_med3(char *ptr1, size_t count, size_t eles
     char *ptr2,  /* Pointer to middle element in array. */
         *ptr3;   /* Pointer to last element in array. */
 
-    /* Median of array with one or two elements is the first element. */
+    /* The median element of an array with one or two elements is always the
+     * first element.
+     */
     if (count <= 2) {
         return ptr1;
     }
 
-    /* Compare first, middle and last elements in array and return median
-     * element.
+    /* Compare the first, middle and last elements in the array and return the
+     * median element.
      */
     ptr2 = ptr1 + (count / 2) * elesize;
     ptr3 = ptr1 + (count - 1) * elesize;
@@ -244,30 +246,27 @@ static char *sort_quicksort_partition_med3(char *ptr1, size_t count, size_t eles
     }
 }
 
-static void sort_quicksort_partition(void *arr, size_t count, size_t elesize, int (*cmp)(const void *, const void *), char **ptrfirstgt, size_t *ifirsteq, size_t *ifirstgt) {
-    char *ptrfirst = (char *)arr,  /* Pointer to first element in array. */
-        *ptrcurr,                  /* Pointer to element to be compared. */
-        *ptrfirsteq,               /* Pointer to first element in equal to partition of array. */
-        *ptrpivot;                 /* Pointer to pivot element to be compared. */
-    size_t icurr = 0;              /* Index of element to be compared. */
-    int cmpresult;                 /* Result of comparison between elements. */
+static void sort_quicksort_partition(void *arr, size_t count, size_t elesize, int (*cmp)(const void *, const void *), char **ptrptrfirstgt, size_t *ptrifirsteq, size_t *ptrifirstgt) {
+    char *ptrstart = (char *)arr,                  /* Pointer to start of array. */
+        *ptrcurr = ptrstart,                       /* Pointer to element to be compared. */
+        *ptrfirsteq = ptrstart,                    /* Pointer to first element in equal to partition of array. */
+        *ptrfirstgt = ptrstart + count * elesize,  /* Pointer to first element in greater than partition of array. */
+        *ptrpivot;                                 /* Pointer to pivot element to be compared. */
+    int cmpresult;                                 /* Result of comparison between elements. */
 
-    /* Determine pivot element with median-of-three. */
-    ptrpivot = sort_quicksort_partition_med3(ptrfirst, count, elesize, cmp);
+    /* Get pivot element with median-of-three. */
+    ptrpivot = sort_quicksort_partition_med3(ptrstart, count, elesize, cmp);
 
-    /* Iterate until array partitioned. */
-    ptrcurr = ptrfirsteq = ptrfirst;
-    *ptrfirstgt = ptrfirst + count * elesize;
-    *ifirstgt = count;
-    while (icurr < *ifirstgt) {
-        /* Compare element with pivot element. */
+    /* Iterate until the entire array is partitioned. */
+    while (ptrcurr < ptrfirstgt) {
+        /* Compare the element with the pivot element. */
         cmpresult = cmp(ptrcurr, ptrpivot);
 
-        /* If element is less than pivot element, swap element to after end of
-         * less than partition of array (which is also the start of equal to
-         * partition). This will move the first element of the equal to
-         * partition (if any) to after end of equal to partition. Keep track of
-         * pivot element when it is swapped.
+        /* If the element is smaller than the pivot element, swap the element to
+         * past the end of the less than partition of the array (also the start
+         * of the equal to partition). This moves the first element of the equal
+         * to partition (if present) to past the end of the equal to partition.
+         * Keep track of the pivot element if it is swapped.
          */
         if (cmpresult < 0) {
             memswap(ptrcurr, ptrfirsteq, elesize);
@@ -275,31 +274,33 @@ static void sort_quicksort_partition(void *arr, size_t count, size_t elesize, in
                 ptrpivot = ptrcurr;
             }
             ptrcurr += elesize;
-            icurr++;
             ptrfirsteq += elesize;
-        /* If element is greater than pivot element, swap element to before
-         * start of greater than partition of array. Keep track of pivot element
-         * when it is swapped.
+        /* If the element is greater than the pivot element, swap the element to
+         * before the start of the greater than partition of the array. Keep
+         * track of pivot element if it is swapped.
          */
         } else if (cmpresult > 0) {
-            *ptrfirstgt -= elesize;
-            (*ifirstgt)--;
-            memswap(ptrcurr, *ptrfirstgt, elesize);
-            if (ptrpivot == *ptrfirstgt) {
+            ptrfirstgt -= elesize;
+            memswap(ptrcurr, ptrfirstgt, elesize);
+            if (ptrpivot == ptrfirstgt) {
                 ptrpivot = ptrcurr;
             }
-        /* If element is equal to pivot element, compare next element. */
+        /* If the element is equal to the pivot element, compare the next
+         * element.
+         */
         } else {
             ptrcurr += elesize;
-            icurr++;
         }
     }
 
-    /* Store pointer to first element in equal to partition of array, index of
-     * first element in equal to partition of array, and index of first element
-     * in greater than partition of array.
+    /* Store the pointer to the first element in the greater than partition of
+     * the array, the index of the first element in the equal to partition of
+     * the array, and the index of first element in the greater than partition
+     * of the array.
      */
-    *ifirsteq = (ptrfirsteq - ptrfirst) / elesize;
+    *ptrptrfirstgt = ptrfirstgt;
+    *ptrifirsteq = (ptrfirsteq - ptrstart) / elesize;
+    *ptrifirstgt = (ptrfirstgt - ptrstart) / elesize;
 }
 
 void sort_quicksort(void *arr, size_t count, size_t elesize, int (*cmp)(const void *, const void *)) {
@@ -307,20 +308,20 @@ void sort_quicksort(void *arr, size_t count, size_t elesize, int (*cmp)(const vo
     size_t ifirsteq,   /* Index of first element in equal to partition of array. */
         ifirstgt;      /* Index of first element in greater than partition of array. */
 
-    /* Don't need to sort arrays with one or less elements. */
+    /* The array is sorted if there are one or fewer elements in the array. */
     if (count <= 1) {
         return;
     }
 
-    /* Partition array into three partitions - less than, equal to and greater
-     * than partitions. The equal to partition would be correctly positioned in
-     * the array.
+    /* Partition array into three partitions - less than, equal to, and greater
+     * than partitions. After partitioning, the elements in the equal to
+     * partition are correctly positioned in the array.
      */
     sort_quicksort_partition(arr, count, elesize, cmp, &ptrfirstgt, &ifirsteq, &ifirstgt);
 
     /* Recursively sort less than and greater than paritions of the array. */
     sort_quicksort(arr, ifirsteq, elesize, cmp);
-    sort_quicksort((void *)ptrfirstgt, count - ifirstgt, elesize, cmp);
+    sort_quicksort(ptrfirstgt, count - ifirstgt, elesize, cmp);
 }
 
 void sort_slowsort(void *arr, size_t count, size_t elesize, int (*cmp)(const void *, const void *)) {
