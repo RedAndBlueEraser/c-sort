@@ -390,40 +390,35 @@ void sort_stoogesort(void *arr, size_t count, size_t elesize, int (*cmp)(const v
 }
 
 void sort_selectionsort(void *arr, size_t count, size_t elesize, int (*cmp)(const void *, const void *)) {
-    char *ptrfirst = (char *)arr,  /* Pointer to first element in array. */
-        *ptrlast,                  /* Pointer to last element in array. */
-        *ptrmin,                   /* Pointer to smallest element in array. */
-        *ptr;                      /* Pointer to element to be compared. */
-    size_t n = count,              /* Length of unsorted portion of array. */
-        i;
+    char *ptrstart = (char *)arr,              /* Pointer to start of unsorted portion array. */
+        *ptrend = ptrstart + count * elesize,  /* Pointer to end of array. */
+        *ptr,                                  /* Pointer to element to be compared. */
+        *ptrmin;                               /* Pointer to smallest element to be swapped. */
 
-    /* Avoid unsigned arithmetic loss. */
-    if (count == 0) {
-        return;
-    }
-
-    /* Iterate until array sorted. After the n'th iteration, at least the n
-     * smallest elements is correctly sorted at the start of the array.
+    /* Iterate until the entire array is sorted. After the n'th iteration, at
+     * least the n smallest elements are correctly positioned at the start of
+     * the array. Only the unsorted portion of the array is traversed through.
      */
-    ptrlast = ptrfirst + (count - 1) * elesize;
-    while (ptrfirst < ptrlast) {
-        /* Find smallest element in array. */
-        ptrmin = ptrfirst;
-        ptr = ptrfirst + elesize;
-        for (i = 1; i < n; i++) {
+    while (ptrstart < ptrend) {
+        /* Find the smallest element in the unsorted portion of the array. */
+        ptrmin = ptrstart;
+
+        /* Step through each element from the start of the unsorted portion of
+         * the array to the end of the array, compare it with the smallest
+         * element, and update the smallest element if this one is smaller.
+         */
+        for (ptr = ptrstart + elesize; ptr < ptrend; ptr += elesize) {
             if (cmp(ptrmin, ptr) > 0) {
                 ptrmin = ptr;
             }
-            ptr += elesize;
         }
 
-        /* Swap smallest element towards the start of the array (to the start of
-         * unsorted portion of array).
+        /* Swap the smallest element with the first element in the unsorted
+         * portion of the array.
          */
-        memswap(ptrfirst, ptrmin, elesize);
+        memswap(ptrstart, ptrmin, elesize);
 
-        ptrfirst += elesize;
-        n--;
+        ptrstart += elesize;
     }
 }
 
