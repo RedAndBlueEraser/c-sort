@@ -184,7 +184,7 @@ void sort_combsort(void *arr, size_t count, size_t elesize, int (*cmp)(const voi
 
 void sort_gnomesort(void *arr, size_t count, size_t elesize, int (*cmp)(const void *, const void *)) {
     char *ptrstart = (char *)arr,              /* Pointer to start of array. */
-        *ptrend = ptrstart + count * elesize,  /* Pointer to end of unsorted portion of array. */
+        *ptrend = ptrstart + count * elesize,  /* Pointer to end of array. */
         *ptr1,                                 /* Pointer to first element to be compared. */
         *ptr2,                                 /* Pointer to second element to be compared. */
         *ptrlastcmp;                           /* Pointer to furthest element that was last compared. */
