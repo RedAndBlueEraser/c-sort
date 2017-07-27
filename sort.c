@@ -424,35 +424,27 @@ void sort_selectionsort(void *arr, size_t count, size_t elesize, int (*cmp)(cons
 }
 
 static void sort_heapsort_heapify_siftdown(char *arr, size_t count, size_t elesize, int (*cmp)(const void *, const void *), size_t iparent) {
-    char *ptrparent,                   /* Pointer to parent node element in array. */
-        *ptrchild1,                    /* Pointer to first (and then to, largest) child node
-                                        * element in array.
-                                        */
-        *ptrchild2;                    /* Pointer to second child node element in array. */
-    size_t ichild1 = 2 * iparent + 1,  /* Index of first (and then to, largest) child node element.
-                                        */
+    char *ptrparent,                   /* Pointer to parent node element. */
+        *ptrchild1,                    /* Pointer to first, and then, largest child node element. */
+        *ptrchild2;                    /* Pointer to second child node element. */
+    size_t ichild1 = 2 * iparent + 1,  /* Index of first, and then, largest child node element. */
         ichild2;                       /* Index of second child node element. */
 
-    /* Compare parent node element with its largest child node element, and swap
-     * if child node element is larger than parent node element. If a swap is
-     * done, recursively compare the child node and its child nodes to build
-     * heap.
-     */
     if (ichild1 < count && ichild1 > iparent) {
-        /* Get largest child node. */
+        /* Get the largest child node element. */
         ptrchild1 = arr + ichild1 * elesize;
         ichild2 = ichild1 + 1;
         if (ichild2 < count && ichild2 > iparent) {
             ptrchild2 = ptrchild1 + elesize;
             if (cmp(ptrchild1, ptrchild2) < 0) {
-                ichild1++;
+                ichild1 = ichild2;
                 ptrchild1 = ptrchild2;
             }
         }
 
-        /* Compare parent node element and largest child node element and swap
-         * if child node element is larger than parent node element. If swap,
-         * recursively sift down (new) child node.
+        /* Compare the parent node element with its largest child node element,
+         * and swap them if the latter is larger than the former. If a swap
+         * occurs, recursively sift down the child node.
          */
         ptrparent = arr + iparent * elesize;
         if (cmp(ptrparent, ptrchild1) < 0) {
@@ -464,10 +456,11 @@ static void sort_heapsort_heapify_siftdown(char *arr, size_t count, size_t elesi
 
 static void sort_heapsort_heapify(char *arr, size_t count, size_t elesize, int (*cmp)(const void *, const void *)) {
     size_t i = count / 2;
-    /* Sift down from bottom of heap (close to middle of array; the last
-     * elements with child nodes) to root of heap (first element of array).
-     * Move smaller elements towards bottom of heap (close to end of array) and
-     * move largest element to root of heap (first element of array).
+    /* Sift down from the bottom of the heap (close to the middle of the array;
+     * the last element with child nodes) to the root of the heap (first element
+     * in the array). Smaller elements are moved towards the bottom of the heap
+     * (end of the array) and larger elements are moved towards the root of the
+     * heap (start of the array).
      */
     while (i-- > 0) {
         sort_heapsort_heapify_siftdown(arr, count, elesize, cmp, i);
@@ -475,32 +468,29 @@ static void sort_heapsort_heapify(char *arr, size_t count, size_t elesize, int (
 }
 
 void sort_heapsort(void *arr, size_t count, size_t elesize, int (*cmp)(const void *, const void *)) {
-    char *ptrfirst = (char *)arr,  /* Pointer to first element in array. */
-        *ptrlast;                  /* Pointer to last element in array. */
-    size_t i;
+    char *ptrstart = (char *)arr,              /* Pointer to start of array. */
+        *ptrend = ptrstart + count * elesize;  /* Pointer to end of array. */
+    size_t i = count;                          /* Index of last element in array. */
 
-    /* Don't need to sort arrays with one or less elements. */
-    if (count <= 1) {
-        return;
-    }
-
-    /* Build heap in array with largest element at root (first element). */
-    sort_heapsort_heapify(ptrfirst, count, elesize, cmp);
-
-    /* Iterate until array sorted. After the n'th iteration, at least the n
-     * largest elements is correctly sorted at the end of the array.
+    /* Build the heap in the array with the largest element at the root (as the
+     * first element of the array).
      */
-    i = count - 1;
-    for (ptrlast = ptrfirst + i * elesize; ptrfirst < ptrlast; ptrlast -= elesize) {
-        /* Swap largest element towards the end of array (to the end of unsorted
-         * portion of array).
+    sort_heapsort_heapify(ptrstart, count, elesize, cmp);
+
+    /* Iterate until the entire array is sorted. After the n'th iteration, at
+     * least the n largest elements are correctly positioned at the end of the
+     * array. Only the unsorted portion of the array is processed on.
+     */
+    while (i-- > 0) {
+        /* Swap the first, n'th largest element with the last element in the
+         * unsorted portion of the array.
          */
-        memswap(ptrfirst, ptrlast, elesize);
+        memswap(ptrstart, ptrend -= elesize, elesize);
 
-        /* After swap, rebuild heap in array. */
-        sort_heapsort_heapify_siftdown(ptrfirst, i, elesize, cmp, 0);
-
-        i--;
+        /* Rebuild the heap in the array without the last element in the
+         * unsorted portion of the array.
+         */
+        sort_heapsort_heapify_siftdown(ptrstart, i, elesize, cmp, 0);
     }
 }
 
