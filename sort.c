@@ -10,7 +10,7 @@
 #define TRUE !FALSE
 #define SORT_COMBSORT_SHRINKFACTOR 1.3
 
-extern int swapcount;
+extern unsigned long int swapcount;
 
 /* Swap the specified amount of bytes between two memory areas. */
 static void memswap(void *ptr1, void *ptr2, size_t len) {
