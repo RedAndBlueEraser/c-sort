@@ -9,6 +9,8 @@
 #define FALSE 0
 #define TRUE !FALSE
 #define SORT_COMBSORT_SHRINKFACTOR 1.3
+#define SORT_SHELLSORT_GAPSEQ { 40423, 17966, 7985, 3549, 1577, 701, 301, 132, 57, 23, 10, 4, 1 }
+#define SORT_SHELLSORT_GAPSEQ_COUNT 13
 
 extern unsigned long int swapcount;
 
@@ -513,5 +515,50 @@ void sort_insertionsort(void *arr, size_t count, size_t elesize, int (*cmp)(cons
         for (ptr2 = ptrcurr, ptr1 = ptr2 - elesize; ptr2 > ptrstart && cmp(ptr1, ptr2) > 0; ptr2 = ptr1, ptr1 -= elesize) {
             memswap(ptr1, ptr2, elesize);
         }
+    }
+}
+
+void sort_shellsort(void *arr, size_t count, size_t elesize, int (*cmp)(const void *, const void *)) {
+    char *ptrstart = (char *)arr,                 /* Pointer to start of array. */
+        *ptrend = ptrstart + count * elesize,     /* Pointer to end of array. */
+        *ptrcurr,                                 /* Pointer to element to be compared. */
+        *ptr1,                                    /* Pointer to first element to be compared. */
+        *ptr2,                                    /* Pointer to second element to be compared. */
+        *ptr2min;                                 /* Pointer to element closest to start of array possible for ptr2 given current gap. */
+    size_t gaps[] = SORT_SHELLSORT_GAPSEQ,        /* Array of gaps in descending order. */
+        gapscount = SORT_SHELLSORT_GAPSEQ_COUNT,  /* Number of elements in gaps array. */
+        igap,                                     /* Index of current gap in gaps array. */
+        gapsize;                                  /* Number of bytes to increment by current gap. */
+
+    /* Get the largest gap from the gap sequence that is smaller than the number
+     * of elements in the array. If there are no elements in the array, run over
+     * the gaps array.
+     */
+    igap = 0;
+    while (igap < gapscount && gaps[igap] >= count) {
+        igap++;
+    }
+
+    /* Perform insertion sort on the array with decreasing gaps. */
+    while (igap < gapscount) {
+        /* Get the number of bytes to increment by the current gap. */
+        /* Calculate the element closest to the start of array possible for ptr2
+         * given the current gap.
+         */
+        gapsize = gaps[igap] * elesize;
+        ptr2min = ptrstart + gapsize;
+
+        /* Iterate until the entire array is traversed. */
+        for (ptrcurr = ptr2min; ptrcurr < ptrend; ptrcurr += elesize) {
+            /* Step through each pair of spaced elements from the current
+             * element to the start of the array, compare them, and swap them if
+             * out of order.
+             */
+            for (ptr2 = ptrcurr, ptr1 = ptr2 - gapsize; ptr2 >= ptr2min && cmp(ptr1, ptr2) > 0; ptr2 = ptr1, ptr1 -= gapsize) {
+                memswap(ptr1, ptr2, elesize);
+            }
+        }
+
+        igap++;
     }
 }
