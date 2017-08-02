@@ -53,3 +53,7 @@ void sort_insertionsort(void *arr, size_t count, size_t elesize,
 /* Sort the elements in the array with shellsort. */
 void sort_shellsort(void *arr, size_t count, size_t elesize,
     int (*cmp)(const void *, const void *));
+
+/* Sort the elements in the array with merge sort. */
+void sort_mergesort(void *arr, size_t count, size_t elesize,
+    int (*cmp)(const void *, const void *));

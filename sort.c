@@ -4,6 +4,9 @@
  * Written by Harry Wong (RedAndBlueEraser)
  */
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "sort.h"
 
 #define FALSE 0
@@ -560,5 +563,79 @@ void sort_shellsort(void *arr, size_t count, size_t elesize, int (*cmp)(const vo
         }
 
         igap++;
+    }
+}
+
+static void sort_mergesort_merge(void *arr, size_t count1, size_t count2, size_t elesize, int (*cmp)(const void *, const void *)) {
+    size_t arr1size = count1 * elesize;      /* Number of bytes of array 1. */
+    char *ptrcurr = (char *)arr,             /* Pointer to element to be written. */
+        *arr1 = (char *)malloc(arr1size),    /* Copy of array 1. */
+        *ptr1 = arr1,                        /* Pointer to element in copy of array 1 to be compared. */
+        *ptr2 = ptrcurr + arr1size,          /* Pointer to element in array 2 to be compared. */
+        *ptr1end = arr1 + arr1size,          /* Pointer to end of copy of array 1. */
+        *ptr2end = ptr2 + count2 * elesize;  /* Pointer to end of array 2. */
+
+    /* Copy array 1. */
+    if (!ptr1) {
+        fprintf(stderr, "Out of memory\n");
+        exit(1);
+    }
+    memcpy(arr1, arr, arr1size);
+
+    /* Step through each element from the start to the end of the copy of array
+     * 1 and array 2 and each element from the start to the end of array 2,
+     * compare them, compare them, and copy the smaller element to the final
+     * array.
+     */
+    while (ptr1 < ptr1end && ptr2 < ptr2end) {
+        if (cmp(ptr1, ptr2) <= 0) {
+            memcpy(ptrcurr, ptr1, elesize);
+            ptr1 += elesize;
+        } else {
+            memcpy(ptrcurr, ptr2, elesize);
+            ptr2 += elesize;
+        }
+        ptrcurr += elesize;
+    }
+
+    /* Copy the remaining elements from the copy of array 1 or array 2 to the
+     * final array.
+     */
+    if (ptr1 < ptr1end) {
+        memcpy(ptrcurr, ptr1, ptr1end - ptr1);
+    } else {
+        memcpy(ptrcurr, ptr2, ptr2end - ptr2);
+    }
+
+    free(arr1);
+}
+
+void sort_mergesort(void *arr, size_t count, size_t elesize, int (*cmp)(const void *, const void *)) {
+    char *ptr1 = (char *)arr,              /* Pointer to first element in array. */
+        *ptr2;                             /* Pointer to second element in array if count is 2, otherwise pointer to middle element in array. */
+    size_t ndivide2 = count / 2,           /* Count divided by two. */
+        nlessndivide2 = count - ndivide2;  /* Count minus count divided by two. */
+
+    /* The array is sorted if there are one or fewer elements in the array. */
+    if (count <= 1) {
+        return;
+    }
+
+    /* If the array contains two elements, compare them, and swap them if out of
+     * order.
+     */
+    if (count == 2) {
+        ptr2 = ptr1 + elesize;
+        if (cmp(ptr1, ptr2) > 0) {
+            memswap(ptr1, ptr2, elesize);
+        }
+    /* If the array has more than two elements, recursively sort the first and
+     * second halves of the array, and then merge the two halves of the array.
+     */
+    } else {
+        ptr2 = ptr1 + ndivide2 * elesize;
+        sort_mergesort(arr, ndivide2, elesize, cmp);
+        sort_mergesort(ptr2, nlessndivide2, elesize, cmp);
+        sort_mergesort_merge(arr, ndivide2, nlessndivide2, elesize, cmp);
     }
 }
