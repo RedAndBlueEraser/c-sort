@@ -605,13 +605,10 @@ static void sort_mergesort_merge(void *arr, size_t count1, size_t count2, size_t
         ptrcurr += elesize;
     }
 
-    /* Copy the remaining elements from the copy of array 1 or array 2 to the
-     * final array.
+    /* Copy the remaining elements from the copy of array 1 to the final array.
      */
     if (ptr1 < ptr1end) {
         memcpy(ptrcurr, ptr1, ptr1end - ptr1);
-    } else {
-        memcpy(ptrcurr, ptr2, ptr2end - ptr2);
     }
 
     free(arr1);
