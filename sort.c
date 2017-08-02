@@ -12,6 +12,7 @@
 #define FALSE 0
 #define TRUE !FALSE
 #define SORT_COMBSORT_SHRINKFACTOR 1.3
+#define SORT_QUICKSORT_INSSORTTHRES 8
 #define SORT_SHELLSORT_GAPSEQ { 40423, 17966, 7985, 3549, 1577, 701, 301, 132, 57, 23, 10, 4, 1 }
 #define SORT_SHELLSORT_GAPSEQ_COUNT 13
 
@@ -315,6 +316,12 @@ void sort_quicksort(void *arr, size_t count, size_t elesize, int (*cmp)(const vo
 
     /* The array is sorted if there are one or fewer elements in the array. */
     if (count <= 1) {
+        return;
+    }
+
+    /* Sort array with insertion sort if array has few elements. */
+    if (count <= SORT_QUICKSORT_INSSORTTHRES) {
+        sort_insertionsort(arr, count, elesize, cmp);
         return;
     }
 
