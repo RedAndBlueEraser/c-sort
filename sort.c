@@ -16,12 +16,9 @@
 #define SORT_SHELLSORT_GAPSEQ { 40423, 17966, 7985, 3549, 1577, 701, 301, 132, 57, 23, 10, 4, 1 }
 #define SORT_SHELLSORT_GAPSEQ_COUNT 13
 
-extern unsigned long int swapcount;
-
 /* Swap the specified amount of bytes between two memory areas. */
 static void memswap(void *ptr1, void *ptr2, size_t len) {
     char *a = (char *)ptr1, *aend = a + len, *b = (char *)ptr2, tmp;
-    swapcount++;
     while (a < aend) {
         tmp = *a;
         *a = *b;

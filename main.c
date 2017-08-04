@@ -15,8 +15,7 @@
 
 #define ARRLEN 150000
 
-unsigned long int cmpcount = 0,   /* Number of comparisons made by the sort. */
-    swapcount = 0;                /* Number of swaps made by the sort. */
+unsigned long int cmpcount = 0;  /* Number of comparisons made by the sort. */
 
 /* Comparison function to determine the sort order. */
 int cmp(const void *a, const void *b) {
@@ -118,7 +117,7 @@ int main(int argc, char *argv[]) {
     sort_quicksort(arr1, ARRLEN, sizeof (int), cmp);
     diff = clock() - start;
     diffinmsec = diff * 1000 / CLOCKS_PER_SEC;
-    printf("%lu compares, %lu swaps\n", cmpcount, swapcount);
+    printf("%lu compares\n", cmpcount);
     printf("Time taken %d seconds %d milliseconds\n", diffinmsec / 1000, diffinmsec % 1000);
     printf("\n");
 
