@@ -303,4 +303,4 @@ Quicksort is noticeably slightly slow when the array is already sorted or revers
 
 ## Author
 
-Harry Wong (RedAndBlueEraser)
+RedAndBlueEraser
